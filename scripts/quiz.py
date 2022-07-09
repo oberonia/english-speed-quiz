@@ -14,10 +14,10 @@ from time import sleep
 # from openpyxl import workbook
 
 # TODO 각 변수는 사용자 입력을 받되, 미입력시에도 동작할 수 있도록 기본값 할당
-duration = 2                # 문제가 화면에 나타나는 시간 (단위: 초)
-# startInx, endInx = 0, 0     # 출제 범위
-startInx, endInx = 300, 309     # 출제 범위
-problems = 10                # 출제 수량
+# duration = 2                # 문제가 화면에 나타나는 시간 (단위: 초)
+# # startInx, endInx = 0, 0     # 출제 범위
+# startInx, endInx = 300, 309     # 출제 범위
+# problems = 10                # 출제 수량
 quizlist = list()           # 출제 범위에 해당하는 단어와 그 뜻을 모아둔 추첨 리스트
 # randint 쓰려면 순서가 없는 딕셔너리에서는 무작위 추첨이 불가하여, 리스트로 생성
 # 리스트의 각 항목은 딕셔너리 형태로 구성 [{word:meaning}, {word:meaning}]
@@ -25,35 +25,35 @@ quizlist = list()           # 출제 범위에 해당하는 단어와 그 뜻을
 problemOrder = list()       # 단어를 출제할 순서, quizlist에서 꺼내올 순서
 # answerlist = list()         # 출제한 순서대로 저장한 문제/정답 리스트
 
-with open('word list.csv', 'rt') as file1:
-    # next(file1)                       # 첫번째 열 건너뛰기
-    params = file1.readlines()          # 리스트 params
-    if endInx == 0:
-        endInx = len(params)-1          # endInx값 미입력 시 마지막 단어까지 범위 지정
-    for item in params[1:]:             # 0번은 tag column이므로 제외        
-        item = item.strip(' \n-')
-        temp = item.split(',')
-        if startInx <= int(temp[0]) <= endInx:          # 출제 범위에 해당하는 단어만 추첨 대상에 추가
-            quizlist.append({temp[1]:temp[2]})
+def shuffle(startInx, endInx, problems):
+    with open('word list.csv', 'rt') as file1:
+        # next(file1)                       # 첫번째 열 건너뛰기
+        params = file1.readlines()          # 리스트 params
+        if endInx == 0:
+            endInx = len(params)-1          # endInx값 미입력 시 마지막 단어까지 범위 지정
+        for item in params[1:]:             # 0번은 tag column이므로 제외        
+            item = item.strip(' \n-')
+            temp = item.split(',')
+            if startInx <= int(temp[0]) <= endInx:          # 출제 범위에 해당하는 단어만 추첨 대상에 추가
+                quizlist.append({temp[1]:temp[2]})
+        # print(quizlist)
+    while 1:
+        randnum = (randint(0, len(quizlist)-1))
+        if randnum not in problemOrder:
+            problemOrder.append(randnum)
+        if len(problemOrder) == problems:
+            break
 
-# print(quizlist)
+def quizstart():
+    for index in problemOrder:                  # 문제 출제
+        for k, v in quizlist[index].items():
+            print(k)
+            sleep(0.2)
+            # sleep(duration)                     # 제한 시간만큼 노출
+    print('=== end of quiz ===')
 
-while 1:
-    randnum = (randint(0, len(quizlist)-1))
-    if randnum not in problemOrder:
-        problemOrder.append(randnum)
-    if len(problemOrder) == problems:
-        break
-
-for index in problemOrder:                  # 문제 출제
-    for k, v in quizlist[index].items():
-        print(k)
-        sleep(0.2)
-        # sleep(duration)                     # 제한 시간만큼 노출
-print('=== end of quiz ===')
-
-for index in problemOrder:                  # 정답 공개
-    for k, v in quizlist[index].items():
-        print(k, v)
-
-print('end')
+def showAnswers():
+    for index in problemOrder:                  # 정답 공개
+        for k, v in quizlist[index].items():
+            print(k, v)
+    print('end')
