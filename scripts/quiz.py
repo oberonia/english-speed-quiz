@@ -25,16 +25,19 @@ quizlist = list()           # 출제 범위에 해당하는 단어와 그 뜻을
 problemOrder = list()       # 단어를 출제할 순서, quizlist에서 꺼내올 순서
 # answerlist = list()         # 출제한 순서대로 저장한 문제/정답 리스트
 
-def shuffle(startInx, endInx, problems):
+def shuffle(startIdx, endIdx, problems):
+    global quizlist, problemOrder
     with open('word list.csv', 'rt') as file1:
         # next(file1)                       # 첫번째 열 건너뛰기
         params = file1.readlines()          # 리스트 params
-        if endInx == 0:
-            endInx = len(params)-1          # endInx값 미입력 시 마지막 단어까지 범위 지정
+        if endIdx == 0:
+            endIdx = len(params)-1          # endInx값 미입력 시 마지막 단어까지 범위 지정
         for item in params[1:]:             # 0번은 tag column이므로 제외        
             item = item.strip(' \n-')
             temp = item.split(',')
-            if startInx <= int(temp[0]) <= endInx:          # 출제 범위에 해당하는 단어만 추첨 대상에 추가
+            if len(quizlist) == problems:
+                break
+            if startIdx <= int(temp[0]) <= endIdx:          # 출제 범위에 해당하는 단어만 추첨 대상에 추가
                 quizlist.append({temp[1]:temp[2]})
         # print(quizlist)
     while 1:
@@ -44,15 +47,21 @@ def shuffle(startInx, endInx, problems):
         if len(problemOrder) == problems:
             break
 
-def quizstart():
-    for index in problemOrder:                  # 문제 출제
-        for k, v in quizlist[index].items():
-            print(k)
-            sleep(0.2)
-            # sleep(duration)                     # 제한 시간만큼 노출
+def quizstart(self):
+    global quizlist, problemOrder
+    try:
+        for index in problemOrder:                  # 문제 출제
+            for k, v in quizlist[index].items():
+                yield k                             # 코루틴 밖으로 값 전달
+                print(k)
+                # sleep(0.2)
+                # sleep(duration)                     # 제한 시간만큼 노출
+    except GeneratorExit as e:
+        print('에러 발생: e')
     print('=== end of quiz ===')
 
 def showAnswers():
+    global quizlist, problemOrder
     for index in problemOrder:                  # 정답 공개
         for k, v in quizlist[index].items():
             print(k, v)
