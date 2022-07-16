@@ -1,3 +1,4 @@
+from time import sleep
 from tkinter import *
 from tkinter import ttk
 from tkinter import font
@@ -42,6 +43,12 @@ label_amount.grid(row=3, column=0)
 entry_amount = ttk.Entry(frame_setup)
 entry_amount.grid(row=3, column=1)
 
+label_filename = ttk.Label(frame_setup, text='확장자 제외 파일명')
+label_filename.grid(row=4, column=0)
+
+entry_filename = ttk.Entry(frame_setup)
+entry_filename.grid(row=4, column=1)
+
 def setup():
     try:
         # frame_setup.pack(side='top', anchor='center', padx=10, pady=20)
@@ -50,6 +57,7 @@ def setup():
         startIdx = int(entry_startIdx.get())
         endIdx = int(entry_endIdx.get())
         amount = int(entry_amount.get())
+        filename = str(entry_filename.get())
         # templabel['text'] = startIdx+'&'+endIdx
         # button_start.configure(state='normal')
     except ValueError:
@@ -63,7 +71,7 @@ def setup():
         # templabel['text'] = '오류: 알 수 없는 오류 발생. 프로그램 재실행 필요'
         print(e)
     finally:
-        shuffle(startIdx, endIdx, amount)
+        shuffle(startIdx, endIdx, amount, filename)
         # templabel2['text'] = '{0}&{1}&{2}&{3}'.format(startIdx,endIdx,problemOrder,quizlist)
         button_start['state'] = 'normal'
         tk.update()

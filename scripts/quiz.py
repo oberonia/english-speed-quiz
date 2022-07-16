@@ -10,8 +10,6 @@
 '''
 
 from random import randint
-from time import sleep
-# from openpyxl import workbook
 
 # TODO 각 변수는 사용자 입력을 받되, 미입력시에도 동작할 수 있도록 기본값 할당
 # duration = 2                # 문제가 화면에 나타나는 시간 (단위: 초)
@@ -25,9 +23,12 @@ final_quiz_list = list()    # quizlist를 problemOrder 순서대로 재정렬한
 problemOrder = list()       # 단어를 출제할 순서, quizlist에서 꺼내올 순서
 # answerlist = list()         # 출제한 순서대로 저장한 문제/정답 리스트
 
-def shuffle(startIdx, endIdx, problems):
+def shuffle(startIdx, endIdx, problems, filename):
     global quizlist, problemOrder
-    with open('word list.csv', 'rt', encoding='utf-8') as file1:
+    if filename == '':
+        filename = 'word list'
+    filename = filename + '.csv'
+    with open(filename, 'rt', encoding='utf-8') as file1:
         # next(file1)                       # 첫번째 열 건너뛰기
         params = file1.readlines()          # 리스트 params
         if endIdx == 0:
