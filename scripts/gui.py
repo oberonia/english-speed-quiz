@@ -54,7 +54,8 @@ def setup():
         # templabel2.update_idletasks()
     finally:
         shuffle(startIdx, endIdx, amount)
-        templabel2['text'] = '{0}&{1}&{2}&{3}'.format(startIdx,endIdx,problemOrder,quizlist)
+        # templabel2['text'] = '{0}&{1}&{2}&{3}'.format(startIdx,endIdx,problemOrder,quizlist)
+        button_start['command'] = start()
         # tk.after
 
 templabel = ttk.Label(tk)
@@ -74,33 +75,50 @@ def start():
     entry_endIdx.grid_forget()
     label_amount.grid_forget()
     entry_amount.grid_forget()
-    button_start.grid_forget()
+    # button_start.grid_forget()
+    pick_one(0)
+    wordlabel['command'] = show()
     
-    # TODO 문제 추첨한 리스트를 직접 사용해서 값을 꺼내기
+def pick_one(integer):
+    global amount
+    if integer < amount:
+        k = list(quizlist[problemOrder[integer]].keys())
+        # k, v= quizlist[problemOrder[integer]].items()
+        print(k[0])
+        # wordlabel.configure(text=k)
+        wordlabel['text'] = k[0]
+        # sleep(duration)
+        # integer += 1
+        # tk.after(1, pick_one(integer))
+    else:
+        return
 
+def show():
+    global amount
+    for i in range(amount):
+        pick_one(i)
+
+'''
+    # TODO 문제 추첨한 리스트를 직접 사용해서 값을 꺼내기
     # TODO loop 한번 돌 때마다 한번 호출하는 함수 만들고, 그 안에서 리스트 하나씩 꺼내쓰기
-    while 1:
-        try:
-            for index in problemOrder:                  # 문제 출제
-                for k, v in quizlist[index].items():
-                    print(k)
-                    # wordlabel.configure(text=k)
-                    wordlabel['text'] = k
-                    sleep(duration)                     # 제한 시간만큼 노출
-        except GeneratorExit as e:
-            print('에러 발생: e')
-        except:
-            break
+    for index in problemOrder:                  # 문제 출제
+        for k, v in quizlist[index].items():
+            print(k)
+            # wordlabel.configure(text=k)
+            wordlabel['text'] = k
+            sleep(duration)                     # 제한 시간만큼 노출
+    # 만약 amount에 도달하면 더이상 동작하지 않도록.
+'''
 
 f = ttk.Frame(tk)
 f.grid(columnspan=1)
 
 button_setup = ttk.Button(f, text='설정', command=setup)
 button_setup.grid(row=6, column=0)
-button_start = ttk.Button(f, text='시작!', command=start)
+button_start = ttk.Button(f, text='시작!')
 button_start.grid(row=6, column=1)
 
-wordlabel = ttk.Label(text='text')
+wordlabel = ttk.Label(text='wordlabel')
 wordlabel.grid(row=7)
 # wordlabel.place(relx=0.5, rely=0.5)
 
