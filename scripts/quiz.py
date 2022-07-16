@@ -27,7 +27,7 @@ problemOrder = list()       # 단어를 출제할 순서, quizlist에서 꺼내�
 
 def shuffle(startIdx, endIdx, problems):
     global quizlist, problemOrder
-    with open('word list.csv', 'rt') as file1:
+    with open('word list.csv', 'rt', encoding='utf-8') as file1:
         # next(file1)                       # 첫번째 열 건너뛰기
         params = file1.readlines()          # 리스트 params
         if endIdx == 0:
@@ -35,8 +35,8 @@ def shuffle(startIdx, endIdx, problems):
         for item in params[1:]:             # 0번은 tag column이므로 제외        
             item = item.strip(' \n-')
             temp = item.split(',')
-            if len(quizlist) == problems:
-                break
+            # if len(quizlist) == problems:
+            #     break
             if startIdx <= int(temp[0]) <= endIdx:          # 출제 범위에 해당하는 단어만 추첨 대상에 추가
                 quizlist.append({temp[1]:temp[2]})
         # print(quizlist)

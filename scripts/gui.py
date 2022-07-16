@@ -6,17 +6,17 @@ from quiz import *
 tk = Tk()
 
 tk.title('Quiz')    # 윈도우 이름
-tk.geometry('800x600+100+100')
+tk.geometry('1024x720+100+100')
 
 duration = 2                # 문제가 화면에 나타나는 시간 (단위: 초)
 # startIdx, endIdx = 1, 10     # 출제 범위
 startIdx, endIdx = 290, 309     # 출제 범위
 amount = 10                # 출제 수량
 
-question_font = font.Font(size=128)
+question_font = font.Font(size=128, family='Helvetica')
 
 frame_setup = ttk.Frame(tk)
-frame_setup.pack(side='top', anchor='center', padx=10, pady=40)
+frame_setup.pack(expand=True, anchor='center', padx=10, pady=40)
 
 label_duration = ttk.Label(frame_setup, text='문제 유지 시간(초)')
 label_duration.grid(row=0, column=0)
@@ -44,17 +44,17 @@ entry_amount.grid(row=3, column=1)
 
 def setup():
     try:
-        frame_setup.pack(side='top', anchor='center', padx=10, pady=20)
+        # frame_setup.pack(side='top', anchor='center', padx=10, pady=20)
         global duration, startIdx, endIdx, amount
-        duration = int(entry_duration.get())
+        duration = float(entry_duration.get())
         startIdx = int(entry_startIdx.get())
         endIdx = int(entry_endIdx.get())
         amount = int(entry_amount.get())
-        templabel['text'] = startIdx+'&'+endIdx
-        button_start['state'] = 'normal'
+        # templabel['text'] = startIdx+'&'+endIdx
+        # button_start.configure(state='normal')
     except ValueError:
-        templabel['text'] = '오류: 미입력한 값이 있습니다'
-        duration = 2                # 문제가 화면에 나타나는 시간 (단위: 초)
+        templabel['text'] = '오류: 미입력한 값이 있거나, 올바르지 않은 유형을 입력함'
+        duration = 0.02                # 문제가 화면에 나타나는 시간 (단위: 초)
         startIdx, endIdx = 286, 309     # 출제 범위
         amount = 20                # 출제 수량
         # templabel2.update_idletasks()
@@ -64,8 +64,7 @@ def setup():
         print(e)
     finally:
         shuffle(startIdx, endIdx, amount)
-        templabel2['text'] = '{0}&{1}&{2}&{3}'.format(startIdx,endIdx,problemOrder,quizlist)
-        # button_start['command'] = start()
+        # templabel2['text'] = '{0}&{1}&{2}&{3}'.format(startIdx,endIdx,problemOrder,quizlist)
         button_start['state'] = 'normal'
         tk.update()
 
@@ -87,14 +86,15 @@ def pick_one(integer):
     wordlabel.configure(text=k[0])
 
 def showQuestion():
-    wordlabel.pack()
+    wordlabel.pack(expand=True, fill='both')
+    # wordlabel.place(rely=0.3)
     button_start['state'] = 'disable'
     global amount
     for i in range(amount):
         pick_one(i)
         tk.update()
-        sleep(0.02)
-        # sleep(duration)
+        # sleep(0.02)
+        sleep(duration)
     button_start.configure(text='정답', state='normal', command=showAnswers)
 
 
@@ -111,16 +111,17 @@ def showAnswers():  # 정답 공개
         for k, v in quizlist[index].items():
             print(k, v)
     button_start.configure(state='disable')
+    button_setup.configure(state='disable')
     # tk.update()
 
 frame_question = ttk.Frame(tk)
-frame_question.pack(side='top', padx=10 ,pady=40)
+frame_question.pack(expand=True)
 frame_answer = ttk.Frame(tk)
 
 wordlabel = ttk.Label(frame_question, text='wordlabel', font=question_font)
 
-# answer_tree = ttk.Treeview(frame_answer, columns=['word', 'meaning'], displaycolumns=['word', 'meaning'], height=20)
-answer_tree = ttk.Treeview(frame_answer, columns=['word'], displaycolumns=['word'], height=20)
+# answer_tree = ttk.Treeview(frame_answer, columns=['word', 'meaning'], displaycolumns=['word', 'meaning'], height=22)
+answer_tree = ttk.Treeview(frame_answer, columns=['word'], displaycolumns=['word'], height=22)
 answer_tree.pack()
 answer_tree.column('word', width=200)
 answer_tree.heading('word', text='', anchor='center')   # 단어
