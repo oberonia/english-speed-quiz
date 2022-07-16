@@ -21,7 +21,7 @@ from time import sleep
 quizlist = list()           # 출제 범위에 해당하는 단어와 그 뜻을 모아둔 추첨 리스트
 # randint 쓰려면 순서가 없는 딕셔너리에서는 무작위 추첨이 불가하여, 리스트로 생성
 # 리스트의 각 항목은 딕셔너리 형태로 구성 [{word:meaning}, {word:meaning}]
-
+final_quiz_list = list()    # quizlist를 problemOrder 순서대로 재정렬한 리스트
 problemOrder = list()       # 단어를 출제할 순서, quizlist에서 꺼내올 순서
 # answerlist = list()         # 출제한 순서대로 저장한 문제/정답 리스트
 
@@ -44,25 +44,27 @@ def shuffle(startIdx, endIdx, problems):
         randnum = (randint(0, len(quizlist)-1))
         if randnum not in problemOrder:
             problemOrder.append(randnum)
+            final_quiz_list.append(list(quizlist[randnum].keys()))
+            final_quiz_list.append(list(quizlist[randnum].values()))
         if len(problemOrder) == problems:
             break
 
-def quizstart(self):
-    global quizlist, problemOrder
-    try:
-        for index in problemOrder:                  # 문제 출제
-            for k, v in quizlist[index].items():
-                yield k                             # 코루틴 밖으로 값 전달
-                print(k)
-                # sleep(0.2)
-                # sleep(duration)                     # 제한 시간만큼 노출
-    except GeneratorExit as e:
-        print('에러 발생: e')
-    print('=== end of quiz ===')
+# def quizstart(self):
+#     global quizlist, problemOrder
+#     try:
+#         for index in problemOrder:                  # 문제 출제
+#             for k, v in quizlist[index].items():
+#                 yield k                             # 코루틴 밖으로 값 전달
+#                 print(k)
+#                 # sleep(0.2)
+#                 # sleep(duration)                     # 제한 시간만큼 노출
+#     except GeneratorExit as e:
+#         print('에러 발생: e')
+#     print('=== end of quiz ===')
 
-def showAnswers():
-    global quizlist, problemOrder
-    for index in problemOrder:                  # 정답 공개
-        for k, v in quizlist[index].items():
-            print(k, v)
-    print('end')
+# def showAnswers():
+#     global quizlist, problemOrder
+#     for index in problemOrder:                  # 정답 공개
+#         for k, v in quizlist[index].items():
+#             print(k, v)
+#     print('end')
