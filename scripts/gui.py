@@ -65,6 +65,7 @@ def setup():
         duration = 0.02                # 문제가 화면에 나타나는 시간 (단위: 초)
         startIdx, endIdx = 286, 309     # 출제 범위
         amount = 20                # 출제 수량
+        filename = 'word list'
         # templabel2.update_idletasks()
     except Exception as e:
         templabel.configure(text='오류: 알 수 없는 오류 발생. 프로그램 재실행 필요')
@@ -77,10 +78,10 @@ def setup():
         tk.update()
 
 templabel = ttk.Label(frame_setup)
-templabel.grid(row=4)
+templabel.grid(row=5, columnspan=2)
 
 templabel2 = ttk.Label(frame_setup, wraplength=300)
-templabel2.grid(row=5)
+templabel2.grid(row=6, columnspan=2)
 
 def start():
     frame_setup.forget()
@@ -113,8 +114,8 @@ def showAnswers():  # 정답 공개
     # answer_label['text'] = final_quiz_list
     for i in range(len(problemOrder)):
         # print(final_quiz_list[i*2], final_quiz_list[i*2+1], sep=' : ')
-        answer_tree.insert('', 'end', text=final_quiz_list[i*2], values=final_quiz_list[i*2+1])
-        # answer_tree.insert('', 'end', text='', values=final_quiz_list[i*2])
+        # answer_tree.insert('', 'end', text=final_quiz_list[i*2], values=final_quiz_list[i*2+1])
+        answer_tree.insert('', 'end', text=i+1, values=final_quiz_list[i])
     for index in problemOrder:                  
         for k, v in quizlist[index].items():
             print(k, v)
@@ -128,13 +129,15 @@ frame_answer = ttk.Frame(tk)
 
 wordlabel = ttk.Label(frame_question, text='wordlabel', font=question_font)
 
-# answer_tree = ttk.Treeview(frame_answer, columns=['word', 'meaning'], displaycolumns=['word', 'meaning'], height=22)
-answer_tree = ttk.Treeview(frame_answer, columns=['word'], displaycolumns=['word'], height=22)
-answer_tree.pack()
+answer_tree = ttk.Treeview(frame_answer, columns=['word', 'meaning'], displaycolumns=['word', 'meaning'], height=22)
+# answer_tree = ttk.Treeview(frame_answer, columns=['word'], displaycolumns=['word'], height=22)
+answer_tree.column('#0', width=70)
+answer_tree.heading('#0', text='Q')   # 순번
 answer_tree.column('word', width=200)
-answer_tree.heading('word', text='', anchor='center')   # 단어
-# answer_tree.column('meaning', width=200)
-# answer_tree.heading('meaning', text='', anchor='center')    # 뜻
+answer_tree.heading('word', text='단어', anchor='center')   # 단어
+answer_tree.column('meaning', width=200)
+answer_tree.heading('meaning', text='뜻', anchor='center')    # 뜻
+answer_tree.pack()
 
 frame_command = ttk.Frame(tk)
 frame_command.pack(side='bottom', padx=10 ,pady=40)

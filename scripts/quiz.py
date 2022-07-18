@@ -43,10 +43,11 @@ def shuffle(startIdx, endIdx, problems, filename):
         # print(quizlist)
     while 1:
         randnum = (randint(0, len(quizlist)-1))
+        key = list(quizlist[randnum].keys())
+        value = list(quizlist[randnum].values())
         if randnum not in problemOrder:
             problemOrder.append(randnum)
-            final_quiz_list.append(list(quizlist[randnum].keys()))
-            final_quiz_list.append(list(quizlist[randnum].values()))
+            final_quiz_list.append((key[0], value[0],))
         if len(problemOrder) == problems:
             break
 
