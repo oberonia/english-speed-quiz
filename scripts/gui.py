@@ -2,17 +2,58 @@ from time import sleep
 from tkinter import *
 from tkinter import ttk
 from tkinter import font
-from quiz import *
+from random import randint
+import csv
 
 tk = Tk()
 
 tk.title('Quiz')    # 윈도우 이름
-tk.geometry('1024x720+100+100')
+tk.geometry('1024x720+100+30')
 
 duration = 2                # 문제가 화면에 나타나는 시간 (단위: 초)
-# startIdx, endIdx = 1, 10     # 출제 범위
 startIdx, endIdx = 290, 309     # 출제 범위
 amount = 10                # 출제 수량
+
+quizlist = list()           # 출제 범위에 해당하는 단어와 그 뜻을 모아둔 추첨 리스트
+# randint 쓰려면 순서가 없는 딕셔너리에서는 무작위 추첨이 불가하여, 리스트로 생성
+# 이중리스트 형태로 구성 [[word,meaning,commentary], [word,meaning,commentary]]
+final_quiz_list = list()    # quizlist를 problemOrder 순서대로 재정렬한 리스트
+problemOrder = list()       # 단어를 출제할 순서, quizlist에서 꺼내올 순서
+
+def shuffle(startIdx, endIdx, problems, filename):
+    global quizlist, problemOrder
+    if filename == '':
+        filename = 'word list'
+    filename = filename + '.csv'
+    with open(filename, 'r', encoding='utf-8-sig') as file1:
+        # next(file1)                       # 첫번째 열 건너뛰기
+        # params = file1.readlines()          # 리스트 params
+        params = csv.DictReader(file1)
+        if endIdx == 0:
+            endIdx = len(params)-1          # endInx값 미입력 시 마지막 단어까지 범위 지정
+        for item in params:                 # 0번은 tag column이므로 제외
+            # item = item.strip(' \n-')
+            # print(item)
+            # temp = item.split(',')          # 본문 안에 있는 ,와 csv ,구분 못함 -> DictReader로 해결
+            if len(quizlist) == problems:
+                break
+            try:
+                if startIdx <= int(item['index']) <= endIdx:          # 출제 범위에 해당하는 단어만 추첨 대상에 추가
+                    quizlist.append([item['word'], item['mean'], item['commentary']])
+            except ValueError as e:
+                print('에러 발생',e)
+                continue
+        # print(quizlist)
+    while 1:
+        randnum = (randint(0, len(quizlist)-1))
+        word = quizlist[randnum][0]              # 단어
+        meaning = quizlist[randnum][1]            # 뜻
+        commentary = quizlist[randnum][2]       # 해설
+        if randnum not in problemOrder:
+            problemOrder.append(randnum)
+            final_quiz_list.append((word, meaning,commentary,))
+        if len(problemOrder) == problems:
+            break
 
 question_font = font.Font(size=128, family='Helvetica')
 
@@ -51,7 +92,6 @@ entry_filename.grid(row=4, column=1)
 
 def setup():
     try:
-        # frame_setup.pack(side='top', anchor='center', padx=10, pady=20)
         global duration, startIdx, endIdx, amount
         duration = float(entry_duration.get())
         startIdx = int(entry_startIdx.get())
@@ -59,14 +99,12 @@ def setup():
         amount = int(entry_amount.get())
         filename = str(entry_filename.get())
         # templabel['text'] = startIdx+'&'+endIdx
-        # button_start.configure(state='normal')
     except ValueError:
         templabel['text'] = '오류: 미입력한 값이 있거나, 올바르지 않은 유형을 입력함'
         duration = 0.02                # 문제가 화면에 나타나는 시간 (단위: 초)
-        startIdx, endIdx = 286, 309     # 출제 범위
+        startIdx, endIdx = 16, 40     # 출제 범위
         amount = 20                # 출제 수량
-        filename = 'word list'
-        # templabel2.update_idletasks()
+        filename = '워드마스터_고등BASIC_Day1'
     except Exception as e:
         templabel.configure(text='오류: 알 수 없는 오류 발생. 프로그램 재실행 필요')
         # templabel['text'] = '오류: 알 수 없는 오류 발생. 프로그램 재실행 필요'
@@ -89,20 +127,16 @@ def start():
     
 def pick_one(integer):
     global amount
-    k = list(quizlist[problemOrder[integer]].keys())
-    # print(k[0])
-    # wordlabel['text'] = k[0]
-    wordlabel.configure(text=k[0])
+    k = quizlist[problemOrder[integer]][0]
+    wordlabel.configure(text=k)
 
 def showQuestion():
     wordlabel.pack(expand=True, fill='both')
-    # wordlabel.place(rely=0.3)
     button_start['state'] = 'disable'
     global amount
     for i in range(amount):
         pick_one(i)
         tk.update()
-        # sleep(0.02)
         sleep(duration)
     button_start.configure(text='정답', state='normal', command=showAnswers)
 
@@ -111,17 +145,10 @@ def showAnswers():  # 정답 공개
     frame_answer.pack(side='top', padx=10 ,pady=40)
     frame_question.forget()
     global quizlist, problemOrder, final_quiz_list
-    # answer_label['text'] = final_quiz_list
     for i in range(len(problemOrder)):
-        # print(final_quiz_list[i*2], final_quiz_list[i*2+1], sep=' : ')
-        # answer_tree.insert('', 'end', text=final_quiz_list[i*2], values=final_quiz_list[i*2+1])
         answer_tree.insert('', 'end', text=i+1, values=final_quiz_list[i])
-    for index in problemOrder:                  
-        for k, v in quizlist[index].items():
-            print(k, v)
     button_start.configure(state='disable')
     button_setup.configure(state='disable')
-    # tk.update()
 
 frame_question = ttk.Frame(tk)
 frame_question.pack(expand=True)
@@ -129,14 +156,15 @@ frame_answer = ttk.Frame(tk)
 
 wordlabel = ttk.Label(frame_question, text='wordlabel', font=question_font)
 
-answer_tree = ttk.Treeview(frame_answer, columns=['word', 'meaning'], displaycolumns=['word', 'meaning'], height=22)
-# answer_tree = ttk.Treeview(frame_answer, columns=['word'], displaycolumns=['word'], height=22)
+answer_tree = ttk.Treeview(frame_answer, columns=['word', 'meaning','commentary'], displaycolumns=['word', 'meaning','commentary'], height=22)
 answer_tree.column('#0', width=70)
 answer_tree.heading('#0', text='Q')   # 순번
 answer_tree.column('word', width=200)
 answer_tree.heading('word', text='단어', anchor='center')   # 단어
 answer_tree.column('meaning', width=200)
 answer_tree.heading('meaning', text='뜻', anchor='center')    # 뜻
+answer_tree.column('commentary', width=200)
+answer_tree.heading('commentary', text='해설', anchor='center')
 answer_tree.pack()
 
 frame_command = ttk.Frame(tk)
