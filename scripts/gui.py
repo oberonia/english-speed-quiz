@@ -3,7 +3,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import font
 from random import randint
-import csv
+import csv, os
 
 tk = Tk()
 
@@ -21,13 +21,14 @@ final_quiz_list = list()    # quizlist를 problemOrder 순서대로 재정렬한
 problemOrder = list()       # 단어를 출제할 순서, quizlist에서 꺼내올 순서
 
 def shuffle(startIdx, endIdx, problems, filename):
+    
+    currentPath = os.getcwd()
+    files = os.listdir(currentPath)
+    print('currentPath: ', currentPath, files)
     global quizlist, problemOrder
-    if filename == '':
-        filename = 'word list'
     filename = filename + '.csv'
-    with open(filename, 'r', encoding='utf-8-sig') as file1:
-        # next(file1)                       # 첫번째 열 건너뛰기
-        # params = file1.readlines()          # 리스트 params
+
+    with open(currentPath+'\\'+filename, 'r', encoding='utf-8-sig') as file1:
         params = csv.DictReader(file1)
         if endIdx == 0:
             endIdx = len(params)-1          # endInx값 미입력 시 마지막 단어까지 범위 지정
@@ -43,7 +44,6 @@ def shuffle(startIdx, endIdx, problems, filename):
             except ValueError as e:
                 print('에러 발생',e)
                 continue
-        # print(quizlist)
     while 1:
         randnum = (randint(0, len(quizlist)-1))
         word = quizlist[randnum][0]              # 단어
@@ -63,31 +63,31 @@ frame_setup.pack(expand=True, anchor='center', padx=10, pady=40)
 label_duration = ttk.Label(frame_setup, text='문제 유지 시간(초)')
 label_duration.grid(row=0, column=0)
 
-entry_duration = ttk.Entry(frame_setup)
+entry_duration = ttk.Entry(frame_setup, width=24)
 entry_duration.grid(row=0, column=1)
 
 label_startIdx = ttk.Label(frame_setup, text='출제 범위 시작값')
 label_startIdx.grid(row=1, column=0)
 
-entry_startIdx = ttk.Entry(frame_setup)
+entry_startIdx = ttk.Entry(frame_setup, width=24)
 entry_startIdx.grid(row=1, column=1)
 
 label_endIdx = ttk.Label(frame_setup, text='출제 범위 마지막값')
 label_endIdx.grid(row=2, column=0)
 
-entry_endIdx = ttk.Entry(frame_setup)
+entry_endIdx = ttk.Entry(frame_setup, width=24)
 entry_endIdx.grid(row=2, column=1)
 
 label_amount = ttk.Label(frame_setup, text='문제 수량')
 label_amount.grid(row=3, column=0)
 
-entry_amount = ttk.Entry(frame_setup)
+entry_amount = ttk.Entry(frame_setup, width=24)
 entry_amount.grid(row=3, column=1)
 
 label_filename = ttk.Label(frame_setup, text='확장자 제외 파일명')
 label_filename.grid(row=4, column=0)
 
-entry_filename = ttk.Entry(frame_setup)
+entry_filename = ttk.Entry(frame_setup, width=24)
 entry_filename.grid(row=4, column=1)
 
 def setup():
@@ -98,22 +98,19 @@ def setup():
         endIdx = int(entry_endIdx.get())
         amount = int(entry_amount.get())
         filename = str(entry_filename.get())
-        # templabel['text'] = startIdx+'&'+endIdx
+        shuffle(startIdx, endIdx, amount, filename)
+        # templabel2['text'] = '{0}&{1}&{2}&{3}'.format(startIdx,endIdx,problemOrder,quizlist)
+        button_start['state'] = 'normal'
+        tk.update()
     except ValueError:
         templabel['text'] = '오류: 미입력한 값이 있거나, 올바르지 않은 유형을 입력함'
         duration = 0.02                # 문제가 화면에 나타나는 시간 (단위: 초)
         startIdx, endIdx = 16, 40     # 출제 범위
         amount = 20                # 출제 수량
-        filename = '워드마스터_고등BASIC_Day1'
+        filename = 'BASIC_Day1'     # 파일명에 한글 들어있으면 오류남
     except Exception as e:
         templabel.configure(text='오류: 알 수 없는 오류 발생. 프로그램 재실행 필요')
-        # templabel['text'] = '오류: 알 수 없는 오류 발생. 프로그램 재실행 필요'
         print(e)
-    finally:
-        shuffle(startIdx, endIdx, amount, filename)
-        # templabel2['text'] = '{0}&{1}&{2}&{3}'.format(startIdx,endIdx,problemOrder,quizlist)
-        button_start['state'] = 'normal'
-        tk.update()
 
 templabel = ttk.Label(frame_setup)
 templabel.grid(row=5, columnspan=2)
@@ -161,7 +158,7 @@ answer_tree.column('#0', width=70)
 answer_tree.heading('#0', text='Q')   # 순번
 answer_tree.column('word', width=200)
 answer_tree.heading('word', text='단어', anchor='center')   # 단어
-answer_tree.column('meaning', width=200)
+answer_tree.column('meaning', width=280)
 answer_tree.heading('meaning', text='뜻', anchor='center')    # 뜻
 answer_tree.column('commentary', width=200)
 answer_tree.heading('commentary', text='해설', anchor='center')
