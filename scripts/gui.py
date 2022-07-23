@@ -23,12 +23,12 @@ problemOrder = list()       # 단어를 출제할 순서, quizlist에서 꺼내�
 def shuffle(startIdx, endIdx, problems, filename):
     
     currentPath = os.getcwd()
-    files = os.listdir(currentPath)
-    print('currentPath: ', currentPath, files)
+    # files = os.listdir(currentPath)
+    # print('currentPath: ', currentPath, files)
     global quizlist, problemOrder
     filename = filename + '.csv'
 
-    with open(currentPath+'\\'+filename, 'r', encoding='utf-8-sig') as file1:
+    with open(currentPath+'/'+filename, 'r', encoding='utf-8-sig') as file1:
         params = csv.DictReader(file1)
         if endIdx == 0:
             endIdx = len(params)-1          # endInx값 미입력 시 마지막 단어까지 범위 지정
@@ -105,8 +105,8 @@ def setup():
     except ValueError:
         templabel['text'] = '오류: 미입력한 값이 있거나, 올바르지 않은 유형을 입력함'
         duration = 0.02                # 문제가 화면에 나타나는 시간 (단위: 초)
-        startIdx, endIdx = 16, 40     # 출제 범위
-        amount = 20                # 출제 수량
+        startIdx, endIdx = 1, 40     # 출제 범위
+        amount = 30                # 출제 수량
         filename = 'BASIC_Day1'     # 파일명에 한글 들어있으면 오류남
     except Exception as e:
         templabel.configure(text='오류: 알 수 없는 오류 발생. 프로그램 재실행 필요')
@@ -141,6 +141,8 @@ def showQuestion():
 def showAnswers():  # 정답 공개
     frame_answer.pack(side='top', padx=10 ,pady=40)
     frame_question.forget()
+    style = ttk.Style(tk)
+    style.configure('Treeview', rowheight=40)       # 열 높이 변경
     global quizlist, problemOrder, final_quiz_list
     for i in range(len(problemOrder)):
         answer_tree.insert('', 'end', text=i+1, values=final_quiz_list[i])
@@ -153,7 +155,7 @@ frame_answer = ttk.Frame(tk)
 
 wordlabel = ttk.Label(frame_question, text='wordlabel', font=question_font)
 
-answer_tree = ttk.Treeview(frame_answer, columns=['word', 'meaning','commentary'], displaycolumns=['word', 'meaning','commentary'], height=22)
+answer_tree = ttk.Treeview(frame_answer, columns=['word', 'meaning','commentary'], displaycolumns=['word', 'meaning','commentary'], height=(amount+2))
 answer_tree.column('#0', width=70)
 answer_tree.heading('#0', text='Q')   # 순번
 answer_tree.column('word', width=200)
