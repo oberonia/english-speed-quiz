@@ -138,6 +138,8 @@ templabel2.grid(row=6, columnspan=2)
 
 def start():
     frame_setup.forget()
+    path = '.\\res\\'
+    print(path.__dir__)
     wordlabel['command'] = showQuestion()
     
 def pick_one(integer):
@@ -150,16 +152,17 @@ def showQuestion():
     frame_question.pack(expand=True)
     wordlabel.pack(expand=True, fill='both')
     button_start['state'] = 'disable'
-    currentPath = os.getcwd()
     filename = 'paper.mp3'
-    path = currentPath+'\\res\\'+filename
+    path = '.\\res\\'+filename
+    # XXX 자꾸 Can't concat bytes to str 에러 나서 path는 일단 보류
     
     global amount
     for i in range(amount):
         pick_one(i)
         tk.update()
         sleep(duration)
-        playsound(path)
+        playsound(filename)
+        # playsound(path)
     
     button_start.configure(text='정답', state='normal', command=showAnswers)
 
