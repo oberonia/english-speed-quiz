@@ -118,7 +118,7 @@ def setup():
         amount = int(entry_amount.get())
         filename = str(entry_filename.get())
         # templabel2['text'] = '{0}&{1}&{2}&{3}'.format(startIdx,endIdx,problemOrder,quizlist)
-        shuffle1 = shuffle(startIdx, endIdx, amount, filename)
+        shuffle(startIdx, endIdx, amount, filename)
         button_start['state'] = 'normal'
         tk.update()
     except ValueError:
@@ -167,6 +167,8 @@ def showAnswers():  # 정답 공개
     style = ttk.Style(tk)
     style.configure('Treeview', rowheight=40)       # 열 높이 변경
     global quizlist, problemOrder, final_quiz_list
+    for row in answer_tree.get_children():
+        answer_tree.delete(row)
     for i in range(len(problemOrder)):
         answer_tree.insert('', 'end', text=i+1, values=final_quiz_list[i])
     button_setup.configure(text='처음으로', state='normal', command=gotoMain)
@@ -195,6 +197,10 @@ answer_tree.heading('meaning', text='뜻', anchor='center')    # 뜻
 answer_tree.column('commentary', width=200)
 answer_tree.heading('commentary', text='해설', anchor='center')
 answer_tree.pack()
+
+verticalSlide = ttk.Scrollbar(tk, orient='vertical', command=answer_tree.yview)
+verticalSlide.pack(side='right', fill='y')
+answer_tree.configure(yscrollcommand=verticalSlide.set)
 
 frame_command = ttk.Frame(tk)
 frame_command.pack(side='bottom', padx=10 ,pady=40)
