@@ -17,19 +17,17 @@ amount = 10                # 출제 수량
 quizlist = list()           # 출제 범위에 해당하는 단어와 그 뜻을 모아둔 추첨 리스트
 # randint 쓰려면 순서가 없는 딕셔너리에서는 무작위 추첨이 불가하여, 리스트로 생성
 # 이중리스트 형태로 구성 [[word,meaning,commentary], [word,meaning,commentary]]
-final_quiz_list = list()    # quizlist를 problemOrder 순서대로 재정렬한 리스트
-problemOrder = list()       # 단어를 출제할 순서, quizlist에서 꺼내올 순서
+final_quiz_list = list()    # quizlist에서 단어, 뜻, 해설을 순서대로 입력한 리스트
 
 def shuffle(startIdx, endIdx, problems, filename):
     
     currentPath = os.getcwd()
-    global quizlist, problemOrder, final_quiz_list
+    global quizlist, final_quiz_list
     filename = filename + '.csv'
     tempOrder = []
 
     if len(quizlist) != 0:
         quizlist.clear()
-        problemOrder = []
         final_quiz_list = []
     with open(currentPath+'/'+filename, 'r', encoding='utf-8-sig') as file1:
         params = csv.DictReader(file1)
@@ -62,16 +60,13 @@ def shuffle(startIdx, endIdx, problems, filename):
             randnum = randint(startIdx, endIdx)
             if randnum not in tempOrder:
                 quizlist.append(quizlist[0])
-    while 1:
-        randnum = (randint(0, len(quizlist)-1))
-        word = quizlist[randnum][0]              # 단어
-        meaning = quizlist[randnum][1]            # 뜻
-        commentary = quizlist[randnum][2]       # 해설
-        if randnum not in problemOrder:
-            problemOrder.append(randnum)
-            final_quiz_list.append((word, meaning,commentary,))
-        if len(problemOrder) == problems:
-            break
+    # while 1:
+        for i in range(len(quizlist)):
+            word = quizlist[i][0]              # 단어
+            meaning = quizlist[i][1]            # 뜻
+            commentary = quizlist[i][2]       # 해설
+            final_quiz_list.append((word, meaning, commentary,))
+        
     return final_quiz_list
 
 question_font = font.Font(size=128, family='Helvetica')
@@ -117,7 +112,7 @@ def setup():
         endIdx = int(entry_endIdx.get())
         amount = int(entry_amount.get())
         filename = str(entry_filename.get())
-        # templabel2['text'] = '{0}&{1}&{2}&{3}'.format(startIdx,endIdx,problemOrder,quizlist)
+        # templabel2['text'] = '{0}&{1}&{2}'.format(startIdx,endIdx,quizlist)
         shuffle(startIdx, endIdx, amount, filename)
         button_start['state'] = 'normal'
         tk.update()
@@ -146,7 +141,7 @@ def start():
     
 def pick_one(integer):
     global amount
-    k = quizlist[problemOrder[integer]][0]
+    k = quizlist[integer][0]
     wordlabel.configure(text=k)
 
 def showQuestion():
@@ -166,10 +161,10 @@ def showAnswers():  # 정답 공개
     frame_question.forget()
     style = ttk.Style(tk)
     style.configure('Treeview', rowheight=40)       # 열 높이 변경
-    global quizlist, problemOrder, final_quiz_list
+    global quizlist, final_quiz_list
     for row in answer_tree.get_children():
         answer_tree.delete(row)
-    for i in range(len(problemOrder)):
+    for i in range(len(final_quiz_list)):
         answer_tree.insert('', 'end', text=i+1, values=final_quiz_list[i])
     button_setup.configure(text='처음으로', state='normal', command=gotoMain)
     button_start.configure(state='disable')
