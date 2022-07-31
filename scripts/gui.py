@@ -124,7 +124,7 @@ def setup():
     except ValueError:
         templabel['text'] = '오류: 미입력한 값이 있거나, 올바르지 않은 유형을 입력함'
         duration = 0.02                # 문제가 화면에 나타나는 시간 (단위: 초)
-        startIdx, endIdx = 33, 40     # 출제 범위
+        startIdx, endIdx = 1, 40     # 출제 범위
         amount = 6                # 출제 수량
         filename = 'BASIC_Day1'     # 파일명에 한글 들어있으면 오류남
         shuffle(startIdx, endIdx, amount, filename)
@@ -150,6 +150,7 @@ def pick_one(integer):
     wordlabel.configure(text=k)
 
 def showQuestion():
+    button_setup.configure(state='disable')
     frame_question.pack(expand=True)
     wordlabel.pack(expand=True, fill='both')
     button_start['state'] = 'disable'
@@ -168,14 +169,15 @@ def showAnswers():  # 정답 공개
     global quizlist, problemOrder, final_quiz_list
     for i in range(len(problemOrder)):
         answer_tree.insert('', 'end', text=i+1, values=final_quiz_list[i])
-    button_setup.configure(state='normal', command=gotoMain)
+    button_setup.configure(text='처음으로', state='normal', command=gotoMain)
     button_start.configure(state='disable')
 
 def gotoMain():
     frame_answer.pack_forget()
     frame_setup.pack(expand=True, anchor='center', padx=10, pady=40)
-    button_setup.configure(state='normal', command=setup)
-    button_start.configure(text='시작!', command=start, state='disable')
+    templabel.configure(text='')
+    button_setup.configure(text='설정', state='normal', command=setup)
+    button_start.configure(text='시작!', state='disable', command=start)
 
 frame_question = ttk.Frame(tk)
 frame_question.pack(expand=True)
