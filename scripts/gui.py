@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import font
 from random import randint
+from playsound import playsound
 import csv, os
 
 tk = Tk()
@@ -60,7 +61,7 @@ def shuffle(startIdx, endIdx, problems, filename):
             randnum = randint(startIdx, endIdx)
             if randnum not in tempOrder:
                 quizlist.append(quizlist[0])
-    # while 1:
+
         for i in range(len(quizlist)):
             word = quizlist[i][0]              # 단어
             meaning = quizlist[i][1]            # 뜻
@@ -123,7 +124,7 @@ def setup():
         amount = 6                # 출제 수량
         filename = 'BASIC_Day1'     # 파일명에 한글 들어있으면 오류남
         shuffle(startIdx, endIdx, amount, filename)
-        button_start['state'] = 'normal'
+        # button_start['state'] = 'normal'
         tk.update()
     except Exception as e:
         templabel.configure(text='오류: 알 수 없는 오류 발생. 프로그램 재실행 필요')
@@ -149,11 +150,15 @@ def showQuestion():
     frame_question.pack(expand=True)
     wordlabel.pack(expand=True, fill='both')
     button_start['state'] = 'disable'
+    filename = 'paper.mp3'
+    
     global amount
     for i in range(amount):
         pick_one(i)
         tk.update()
         sleep(duration)
+        playsound(filename)
+    
     button_start.configure(text='정답', state='normal', command=showAnswers)
 
 def showAnswers():  # 정답 공개
