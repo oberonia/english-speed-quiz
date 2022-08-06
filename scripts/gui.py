@@ -158,10 +158,10 @@ def showQuestion():
     
     global amount
     for i in range(amount):
+        playsound(filename)
         pick_one(i)
         tk.update()
         sleep(duration)
-        playsound(filename)
         # playsound(path)
     
     button_start.configure(text='정답', state='normal', command=showAnswers)
