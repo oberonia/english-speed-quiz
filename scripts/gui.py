@@ -20,6 +20,8 @@ quizlist = list()           # 출제 범위에 해당하는 단어와 그 뜻을
 # 이중리스트 형태로 구성 [[word,meaning,commentary], [word,meaning,commentary]]
 final_quiz_list = list()    # quizlist에서 단어, 뜻, 해설을 순서대로 입력한 리스트
 
+# TODO init에 기본적인 ui 선언을 다 때려넣어야 하는거 아닌지???
+
 def shuffle(startIdx, endIdx, problems, filename):
     
     currentPath = os.getcwd()
@@ -45,22 +47,25 @@ def shuffle(startIdx, endIdx, problems, filename):
                 continue
         
         # quizlist에서 problems 갯수만큼 무작위 추첨
-        while 1:
-            randnum = randint(1, len(quizlist))
+        while True:
+            randnum = randint(0, len(quizlist)-1)
             if randnum not in tempOrder:
                 tempOrder.append(randnum)
             if len(tempOrder) == problems:
                 break
-
-        for i in tempOrder:
-            word = quizlist[i][0]              # 단어
-            meaning = quizlist[i][1]            # 뜻
-            commentary = quizlist[i][2]       # 해설
-            final_quiz_list.append((word, meaning, commentary,))
-        
+        try:
+            for i in tempOrder:
+                word = quizlist[i][0]              # 단어
+                meaning = quizlist[i][1]            # 뜻
+                commentary = quizlist[i][2]       # 해설
+                final_quiz_list.append((word, meaning, commentary,))
+        except IndexError:
+            print("tempOrder -> ", tempOrder)
+            print("quizlist -> ", quizlist)
     return final_quiz_list
 
 question_font = font.Font(size=128, family='Helvetica')
+number_font = font.Font(size=20, family='Helvetica', weight='normal')
 
 frame_setup = ttk.Frame(tk)
 frame_setup.pack(expand=True, anchor='center', padx=10, pady=40)
@@ -112,9 +117,9 @@ def setup():
         duration = 0.02                # 문제가 화면에 나타나는 시간 (단위: 초)
         startIdx, endIdx = 5, 6     # 출제 범위
         amount = 6                # 출제 수량
-        filename = 'BASIC_Day2'     # 파일명에 한글 들어있으면 오류남
+        filename = 'BASIC_Day1'     # 파일명에 한글 들어있으면 오류남
         shuffle(startIdx, endIdx, amount, filename)
-        # button_start['state'] = 'normal'
+        button_start['state'] = 'normal'
         tk.update()
     except Exception as e:
         templabel.configure(text='오류: 알 수 없는 오류 발생. 프로그램 재실행 필요')
@@ -134,13 +139,14 @@ def start():
     
 def pick_one(integer):
     global amount
-    k = quizlist[integer][0]
+    k = final_quiz_list[integer][0]
     wordlabel.configure(text=k)
 
 def showQuestion():
     button_setup.configure(state='disable')
-    frame_question.pack(expand=True)
+    frame_question.pack(expand=True, fill='both')
     wordlabel.pack(expand=True, fill='both')
+    wordlIndex.place(relx=0.5, rely=0.98, anchor='center')
     button_start['state'] = 'disable'
     filename = 'paper.mp3'
     path = '.\\res\\'+filename
@@ -150,6 +156,7 @@ def showQuestion():
     for i in range(amount):
         playsound(filename)
         pick_one(i)
+        wordlIndex.configure(text='{0} / {1}'.format(i+1,amount))       # 현재 문제 순번 / 전체 문제수
         tk.update()
         sleep(duration)
         # playsound(path)
@@ -177,10 +184,11 @@ def gotoMain():
     button_start.configure(text='시작!', state='disable', command=start)
 
 frame_question = ttk.Frame(tk)
-frame_question.pack(expand=True)
+frame_question.pack(expand=True, fill='both')
 frame_answer = ttk.Frame(tk)
 
-wordlabel = ttk.Label(frame_question, text='wordlabel', font=question_font)
+wordlabel = ttk.Label(frame_question, text='wordlabel', font=question_font, anchor='center')
+wordlIndex = ttk.Label(frame_question, text='wordIndex', font=number_font, anchor='center')
 
 answer_tree = ttk.Treeview(frame_answer, columns=['word', 'meaning','commentary'], displaycolumns=['word', 'meaning','commentary'], height=(amount+2))
 answer_tree.column('#0', width=70)
@@ -193,9 +201,9 @@ answer_tree.column('commentary', width=200)
 answer_tree.heading('commentary', text='해설', anchor='center')
 answer_tree.pack()
 
-verticalSlide = ttk.Scrollbar(tk, orient='vertical', command=answer_tree.yview)
-verticalSlide.pack(side='right', fill='y')
-answer_tree.configure(yscrollcommand=verticalSlide.set)
+# verticalSlide = ttk.Scrollbar(tk, orient='vertical', command=answer_tree.yview)
+# verticalSlide.pack(side='right', fill='y')
+# answer_tree.configure(yscrollcommand=verticalSlide.set)
 
 frame_command = ttk.Frame(tk)
 frame_command.pack(side='bottom', padx=10 ,pady=40)
