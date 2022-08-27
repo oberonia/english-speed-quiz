@@ -32,37 +32,27 @@ def shuffle(startIdx, endIdx, problems, filename):
         final_quiz_list = []
     with open(currentPath+'/'+filename, 'r', encoding='utf-8-sig') as file1:
         params = csv.DictReader(file1)
+
+        for item in params:
+            try:
+                rangeNum = range(startIdx, endIdx+1)
+                if int(item['index']) in rangeNum:          # 출제 범위에 해당하는 단어만 추첨 대상에 추가
+                    quizlist.append([item['word'], item['mean'], item['commentary']])
+            except ValueError as e:
+                errorText = '에러 발생. 재시작 필요'
+                templabel['text'] = errorText
+                tk.update()
+                continue
         
-        if endIdx == 0:
-            endIdx = len(params)-1          # endInx값 미입력 시 마지막 단어까지 범위 지정
-        
-        # 시작값~끝값 사이에서 problems 갯수 무작위 추첨
+        # quizlist에서 problems 갯수만큼 무작위 추첨
         while 1:
-            randnum = randint(startIdx, endIdx)
+            randnum = randint(1, len(quizlist))
             if randnum not in tempOrder:
                 tempOrder.append(randnum)
             if len(tempOrder) == problems:
                 break
-        for item in params:
-            # item = item.strip(' \n-')
-            # temp = item.split(',')          # 본문 안에 있는 ,와 csv ,구분 못함 -> DictReader로 해결
-            if len(quizlist) == problems:
-                break
-            try:
-                if int(item['index']) in tempOrder:          # 출제 범위에 해당하는 단어만 추첨 대상에 추가
-                    quizlist.append([item['word'], item['mean'], item['commentary']])
-            except ValueError as e:
-                errorText = '에러 발생. 재시작 필요'&e
-                templabel['text'] = errorText
-                tk.update()
-                continue
-        if len(quizlist) < problems:
-            # XXX 중간에 index가 없는 번호가 tempOrder에 추첨된 경우, 첫번째 아이템을 중복으로 계속 추가
-            randnum = randint(startIdx, endIdx)
-            if randnum not in tempOrder:
-                quizlist.append(quizlist[0])
 
-        for i in range(len(quizlist)):
+        for i in tempOrder:
             word = quizlist[i][0]              # 단어
             meaning = quizlist[i][1]            # 뜻
             commentary = quizlist[i][2]       # 해설
@@ -120,9 +110,9 @@ def setup():
     except ValueError:
         templabel['text'] = '오류: 미입력한 값이 있거나, 올바르지 않은 유형을 입력함'
         duration = 0.02                # 문제가 화면에 나타나는 시간 (단위: 초)
-        startIdx, endIdx = 1, 40     # 출제 범위
+        startIdx, endIdx = 5, 6     # 출제 범위
         amount = 6                # 출제 수량
-        filename = 'BASIC_Day1'     # 파일명에 한글 들어있으면 오류남
+        filename = 'BASIC_Day2'     # 파일명에 한글 들어있으면 오류남
         shuffle(startIdx, endIdx, amount, filename)
         # button_start['state'] = 'normal'
         tk.update()
