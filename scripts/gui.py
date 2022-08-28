@@ -64,8 +64,8 @@ def shuffle(startIdx, endIdx, problems, filename):
             print("quizlist -> ", quizlist)
     return final_quiz_list
 
-question_font = font.Font(size=128, family='Helvetica')
-number_font = font.Font(size=20, family='Helvetica', weight='normal')
+question_font = font.Font(size=132, family='Helvetica')
+number_font = font.Font(size=32, family='Helvetica', weight='normal')
 
 frame_setup = ttk.Frame(tk)
 frame_setup.pack(expand=True, anchor='center', padx=10, pady=40)
@@ -146,7 +146,7 @@ def showQuestion():
     button_setup.configure(state='disable')
     frame_question.pack(expand=True, fill='both')
     wordlabel.pack(expand=True, fill='both')
-    wordlIndex.place(relx=0.5, rely=0.98, anchor='center')
+    wordlIndex.place(relx=0.5, rely=0.05, anchor='center')
     button_start['state'] = 'disable'
     filename = 'paper.mp3'
     path = '.\\res\\'+filename
