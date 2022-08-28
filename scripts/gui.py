@@ -146,7 +146,7 @@ def showQuestion():
     button_setup.configure(state='disable')
     frame_question.pack(expand=True, fill='both')
     wordlabel.pack(expand=True, fill='both')
-    wordlIndex.place(relx=0.5, rely=0.05, anchor='center')
+    wordlIndex.place(relx=0.5, rely=0.25, anchor='center')
     button_start['state'] = 'disable'
     filename = 'paper.mp3'
     path = '.\\res\\'+filename
