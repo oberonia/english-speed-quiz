@@ -1,15 +1,15 @@
-﻿index,word,mean,commentary,etc,
+index,word,mean,commentary,etc,
 3,advise,"v. 충고하다, 조언하다",,
 1,include,v. 포함하다,,
 1,product,"n. 제품, 생산품, 결과",,
-2,belief,"n. 믿음, 신념, 신앙",,
-2,produce,v. 생산하다,,
-2,production,n. 생산(량),,
-2,similar,"a. 비슷한, 유사한",,
-2,similarity,n. 유사점,,
-2,similarily,"ad. 비슷하게, 유사하게",,
-2,moment,"n. 순간, 중요성",,
-1,momentary ,a. 순간적인,,
+1,belief,"n. 믿음, 신념, 신앙",,
+1,produce,v. 생산하다,,
+1,production,n. 생산(량),,
+1,similar,"a. 비슷한, 유사한",,
+1,similarity,n. 유사점,,
+1,similarily,"ad. 비슷하게, 유사하게",,
+1,moment,"n. 순간, 중요성",,
+1,momentary,a. 순간적인,,
 1,momentous,a. 종대한,,
 1,situation,"n. 상황, 위치",,
 1,situate,"v. ~의 위치를 정하다, ~을 (어떤 장소에) 두다",,
@@ -20,7 +20,7 @@
 a. 상대적인, 관계 있는",,
 1,increase,"v. 증가하다, 증가시키다
 n. 증가, 인상",,
-2,decrease ,"v. 감소하다, 감소시키다
+2,decrease,"v. 감소하다, 감소시키다
 n. 감소, 축소",,
 2,share,"v. 나누다, 공유하다.
 n. 몫",,
@@ -36,7 +36,7 @@ n. 방울, 하락",,
 2,return,"v. 돌아오다, 돌려주다
 n. 귀환, 반환",,
 3,advanced,"a. 진보한, 상급의",,
-3,advance ,"v. 나아가게 하다
+3,advance,"v. 나아가게 하다
 n. 전진, 발전",,
 3,reject,v. 거절하다,,
 3,rejection,"n. 거절, 거부",,
@@ -64,7 +64,7 @@ a. 급행의, 신속한
 n. 급행, 속달",,
 5,expression,"n. 표현, 표정",,
 5,quantity,"n. 양, 수량",,
-5,quality ,"a. 질, 고급의",,
+5,quality,"a. 질, 고급의",,
 5,superior,"a. 뛰어난, 우월한, 상급의
 n. 윗사람, 상급자",,
 5,inferior,"a. 열등한, 하위의

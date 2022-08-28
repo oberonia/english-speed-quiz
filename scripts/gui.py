@@ -119,7 +119,7 @@ def setup():
         amount = 6                # 출제 수량
         filename = 'BASIC_Day1'     # 파일명에 한글 들어있으면 오류남
         shuffle(startIdx, endIdx, amount, filename)
-        button_start['state'] = 'normal'
+        # button_start['state'] = 'normal'
         tk.update()
     except Exception as e:
         templabel.configure(text='오류: 알 수 없는 오류 발생. 프로그램 재실행 필요')
