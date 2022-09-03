@@ -15,6 +15,7 @@ tk.geometry('1024x720+100+30')
 duration = 2                # 문제가 화면에 나타나는 시간 (단위: 초)
 startIdx, endIdx = 290, 309     # 출제 범위
 amount = 10                # 출제 수량
+filename = 'paper.mp3'
 
 quizlist = list()           # 출제 범위에 해당하는 단어와 그 뜻을 모아둔 추첨 리스트
 # randint 쓰려면 순서가 없는 딕셔너리에서는 무작위 추첨이 불가하여, 리스트로 생성
@@ -113,7 +114,6 @@ def setup():
         shuffle(startIdx, endIdx, amount, filename)
         button_start['state'] = 'normal'
         tk.update()
-        openWindow()
     except ValueError:
         templabel['text'] = '오류: 미입력한 값이 있거나, 올바르지 않은 유형을 입력함'
         duration = 0.02                # 문제가 화면에 나타나는 시간 (단위: 초)
@@ -121,8 +121,7 @@ def setup():
         amount = 6                # 출제 수량
         filename = 'BASIC_Day1'     # 파일명에 한글 들어있으면 오류남
         shuffle(startIdx, endIdx, amount, filename)
-        button_start['state'] = 'normal'  # for test
-        openWindow()                      # for test
+        # button_start['state'] = 'normal'    # for test
         tk.update()
     except Exception as e:
         templabel.configure(text='오류: 알 수 없는 오류 발생. 프로그램 재실행 필요')
@@ -137,29 +136,14 @@ templabel2.grid(row=6, columnspan=2)
 def start():
     frame_setup.forget()
     path = '.\\res\\'
-    print(path.__dir__)
+    print('start', path.__dir__)
     wordlabel['command'] = showQuestion()
     
 def pick_one(integer):
     global amount
     k = final_quiz_list[integer][0]
     wordlabel.configure(text=k)
-
-def openWindow():
-    window = tkinter.Toplevel()
-    window.title('Window2')
-    window.geometry('1024x720+150+80')
-
-    frame_window = ttk.Frame(window)
-    frame_window.pack(expand=True, fill='both')
-    wordlabelWindow = ttk.Label(frame_window, text='Ready', font=question_font, anchor='center')
-    wordlIndex = ttk.Label(frame_window, text='wordIndex', font=number_font, anchor='center')
-    
-    frame_window.pack(expand=True, fill='both')
-    wordlIndex.place(relx=0.5, rely=0.25, anchor='center')
-    wordlabelWindow.pack(expand=True, fill='both')
-    # label = tkinter.Label(window, text="temp")
-    # label.pack()
+    wordlabelWindow.configure(text=k)
 
 def showQuestion():
     button_setup.configure(state='disable')
@@ -177,6 +161,8 @@ def showQuestion():
         pick_one(i)
         wordlIndex.configure(text='{0} / {1}'.format(i+1,amount))       # 현재 문제 순번 / 전체 문제수
         tk.update()
+        wordlIndexWindow.configure(text='{0} / {1}'.format(i+1,amount))       # 현재 문제 순번 / 전체 문제수
+        window.update()
         sleep(duration)
         # playsound(path)
     
@@ -210,10 +196,10 @@ window.geometry('1024x720+150+80')
 frame_window = ttk.Frame(window)
 frame_window.pack(expand=True, fill='both')
 wordlabelWindow = ttk.Label(frame_window, text='Ready', font=question_font, anchor='center')
-wordlIndex = ttk.Label(frame_window, text='wordIndex', font=number_font, anchor='center')
+wordlIndexWindow = ttk.Label(frame_window, text='Index', font=number_font, anchor='center')
 
 frame_window.pack(expand=True, fill='both')
-wordlIndex.place(relx=0.5, rely=0.25, anchor='center')
+wordlIndexWindow.place(relx=0.5, rely=0.25, anchor='center')
 wordlabelWindow.pack(expand=True, fill='both')
 # end of window
 
