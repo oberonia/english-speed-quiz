@@ -4,6 +4,7 @@ from tkinter import ttk
 from tkinter import font
 from random import randint
 import tkinter
+from tkinter.filedialog import askopenfilename
 from playsound import playsound
 import csv, os
 
@@ -15,7 +16,7 @@ tk.geometry('1024x720+100+30')
 duration = 2                # 문제가 화면에 나타나는 시간 (단위: 초)
 startIdx, endIdx = 290, 309     # 출제 범위
 amount = 10                # 출제 수량
-filename = 'paper.mp3'
+filename = ''
 
 quizlist = list()           # 출제 범위에 해당하는 단어와 그 뜻을 모아둔 추첨 리스트
 # randint 쓰려면 순서가 없는 딕셔너리에서는 무작위 추첨이 불가하여, 리스트로 생성
@@ -24,17 +25,35 @@ final_quiz_list = list()    # quizlist에서 단어, 뜻, 해설을 순서대로
 
 # TODO init에 기본적인 ui 선언을 다 때려넣어야 하는거 아닌지???
 
+def importFile():
+    global filename
+    try:
+        filename = askopenfilename(initialdir=os.getcwd(), title="Import File", filetypes=(("csv files", "*.csv"),))
+        if ".csv" in filename:
+            if "/" in filename:
+                templist = filename.split("/")
+                filename = templist[-1]             # 파일명만 경로에서 분리
+            if "\\" in filename:
+                templist = filename.split("\\")
+                filename = templist[-1]
+            
+            label_filename.configure(text=filename)
+        else:
+            label_filename.configure(text="오류: 파일 확장자가 csv가 아닙니다.")
+            button_start['state'] = 'disable'
+    except:
+        label_filename.configure(text="오류: 파일 import 실패")
+        button_start['state'] = 'disable'
+
 def shuffle(startIdx, endIdx, problems, filename):
     
-    currentPath = os.getcwd()
     global quizlist, final_quiz_list
-    filename = filename + '.csv'
     tempOrder = []
 
     if len(quizlist) != 0:
         quizlist.clear()
         final_quiz_list = []
-    with open(currentPath+'/'+filename, 'r', encoding='utf-8-sig') as file1:
+    with open(filename, 'r', encoding='utf-8-sig') as file1:
         params = csv.DictReader(file1)
 
         for item in params:
@@ -43,8 +62,9 @@ def shuffle(startIdx, endIdx, problems, filename):
                 if int(item['index']) in rangeNum:          # 출제 범위에 해당하는 단어만 추첨 대상에 추가
                     quizlist.append([item['word'], item['mean'], item['commentary']])
             except ValueError as e:
-                errorText = '에러 발생. 재시작 필요'
+                errorText = '오류: 에러 발생. 프로그램 재시작 필요'
                 templabel['text'] = errorText
+                button_start['state'] = 'disable'
                 tk.update()
                 continue
         
@@ -96,35 +116,43 @@ label_amount.grid(row=3, column=0)
 entry_amount = ttk.Entry(frame_setup, width=24)
 entry_amount.grid(row=3, column=1)
 
-label_filename = ttk.Label(frame_setup, text='확장자 제외 파일명')
-label_filename.grid(row=4, column=0)
+label_file = ttk.Label(frame_setup, text='파일')
+label_file.grid(row=4, column=0)
 
-entry_filename = ttk.Entry(frame_setup, width=24)
-entry_filename.grid(row=4, column=1)
+label_filename = ttk.Label(frame_setup)
+label_filename.grid(row=4, column=1)
+
+button_setup = ttk.Button(frame_setup, text='Import', command=importFile)
+button_setup.grid(row=4, column=2)
 
 def setup():
     try:
-        global duration, startIdx, endIdx, amount
+        global duration, startIdx, endIdx, amount, filename
         duration = float(entry_duration.get())
         startIdx = int(entry_startIdx.get())
         endIdx = int(entry_endIdx.get())
         amount = int(entry_amount.get())
-        filename = str(entry_filename.get())
-        # templabel2['text'] = '{0}&{1}&{2}'.format(startIdx,endIdx,quizlist)
-        shuffle(startIdx, endIdx, amount, filename)
-        button_start['state'] = 'normal'
-        tk.update()
+        if filename != "":
+            shuffle(startIdx, endIdx, amount, filename)
+            button_start['state'] = 'normal'
+            templabel.configure(text='')
+            tk.update()
+        else:
+            templabel.configure(text='오류: 파일 미첨부')
+            button_start['state'] = 'disable'
     except ValueError:
         templabel['text'] = '오류: 미입력한 값이 있거나, 올바르지 않은 유형을 입력함'
         duration = 0.02                # 문제가 화면에 나타나는 시간 (단위: 초)
         startIdx, endIdx = 5, 6     # 출제 범위
         amount = 6                # 출제 수량
-        filename = 'BASIC_Day1'     # 파일명에 한글 들어있으면 오류남
+        filename = 'BASIC_Day1.csv'     # 파일명에 한글 들어있으면 오류남
         shuffle(startIdx, endIdx, amount, filename)
         # button_start['state'] = 'normal'    # for test
+        button_start['state'] = 'disable'   # 오류로 disable
         tk.update()
     except Exception as e:
         templabel.configure(text='오류: 알 수 없는 오류 발생. 프로그램 재실행 필요')
+        button_start['state'] = 'disable'
         print(e)
 
 templabel = ttk.Label(frame_setup)
@@ -151,13 +179,13 @@ def showQuestion():
     wordlabel.pack(expand=True, fill='both')
     wordlIndex.place(relx=0.5, rely=0.25, anchor='center')
     button_start['state'] = 'disable'
-    filename = 'paper.mp3'
-    path = '.\\res\\'+filename
+    soundFile = 'paper.mp3'
+    # path = '.\\res\\'+filename
     # XXX 자꾸 Can't concat bytes to str 에러 나서 path는 일단 보류
     
     global amount
     for i in range(amount):
-        playsound(filename)
+        playsound(soundFile)
         pick_one(i)
         wordlIndex.configure(text='{0} / {1}'.format(i+1,amount))       # 현재 문제 순번 / 전체 문제수
         tk.update()
