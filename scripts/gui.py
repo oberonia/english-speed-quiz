@@ -18,6 +18,8 @@ startIdx, endIdx = 290, 309     # 출제 범위
 amount = 10                # 출제 수량
 filename = ''
 
+dual_window_flag = False
+
 quizlist = list()           # 출제 범위에 해당하는 단어와 그 뜻을 모아둔 추첨 리스트
 # randint 쓰려면 순서가 없는 딕셔너리에서는 무작위 추첨이 불가하여, 리스트로 생성
 # 이중리스트 형태로 구성 [[word,meaning,commentary], [word,meaning,commentary]]
@@ -171,7 +173,8 @@ def pick_one(integer):
     global amount
     k = final_quiz_list[integer][0]
     wordlabel.configure(text=k)
-    wordlabelWindow.configure(text=k)
+    if dual_window_flag == True:
+        wordlabelWindow.configure(text=k)
 
 def showQuestion():
     button_setup.configure(state='disable')
@@ -185,12 +188,14 @@ def showQuestion():
     
     global amount
     for i in range(amount):
+        # async?
         playsound(soundFile)
         pick_one(i)
         wordlIndex.configure(text='{0} / {1}'.format(i+1,amount))       # 현재 문제 순번 / 전체 문제수
         tk.update()
-        wordlIndexWindow.configure(text='{0} / {1}'.format(i+1,amount))       # 현재 문제 순번 / 전체 문제수
-        window.update()
+        if dual_window_flag == True:
+            wordlIndexWindow.configure(text='{0} / {1}'.format(i+1,amount))       # 현재 문제 순번 / 전체 문제수
+            window.update()
         sleep(duration)
         # playsound(path)
     
@@ -216,20 +221,21 @@ def gotoMain():
     button_setup.configure(text='설정', state='normal', command=setup)
     button_start.configure(text='시작!', state='disable', command=start)
 
-# 시작할 때 같이 열리는 팝업, 학생용
-window = tkinter.Toplevel()
-window.title('Window')
-window.geometry('1024x720+150+80')
+if dual_window_flag == True: 
+    # 시작할 때 같이 열리는 팝업, 학생용
+    window = tkinter.Toplevel()
+    window.title('Window')
+    window.geometry('1024x720+150+80')
 
-frame_window = ttk.Frame(window)
-frame_window.pack(expand=True, fill='both')
-wordlabelWindow = ttk.Label(frame_window, text='Ready', font=question_font, anchor='center')
-wordlIndexWindow = ttk.Label(frame_window, text='Index', font=number_font, anchor='center')
+    frame_window = ttk.Frame(window)
+    frame_window.pack(expand=True, fill='both')
+    wordlabelWindow = ttk.Label(frame_window, text='Ready', font=question_font, anchor='center')
+    wordlIndexWindow = ttk.Label(frame_window, text='Index', font=number_font, anchor='center')
 
-frame_window.pack(expand=True, fill='both')
-wordlIndexWindow.place(relx=0.5, rely=0.25, anchor='center')
-wordlabelWindow.pack(expand=True, fill='both')
-# end of window
+    frame_window.pack(expand=True, fill='both')
+    wordlIndexWindow.place(relx=0.5, rely=0.25, anchor='center')
+    wordlabelWindow.pack(expand=True, fill='both')
+    # end of window
 
 frame_question = ttk.Frame(tk)
 frame_question.pack(expand=True, fill='both')
