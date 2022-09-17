@@ -18,7 +18,9 @@ startIdx, endIdx = 290, 309     # 출제 범위
 amount = 10                # 출제 수량
 filename = ''
 
-dual_window_flag = False
+flag_dual_window = False
+flag_suspend = False
+flag_testmode = False
 
 quizlist = list()           # 출제 범위에 해당하는 단어와 그 뜻을 모아둔 추첨 리스트
 # randint 쓰려면 순서가 없는 딕셔너리에서는 무작위 추첨이 불가하여, 리스트로 생성
@@ -129,7 +131,7 @@ button_setup.grid(row=4, column=2)
 
 def setup():
     try:
-        global duration, startIdx, endIdx, amount, filename
+        global duration, startIdx, endIdx, amount, filename, flag_testmode
         duration = float(entry_duration.get())
         startIdx = int(entry_startIdx.get())
         endIdx = int(entry_endIdx.get())
@@ -149,8 +151,11 @@ def setup():
         amount = 6                # 출제 수량
         filename = 'BASIC_Day1.csv'     # 파일명에 한글 들어있으면 오류남
         shuffle(startIdx, endIdx, amount, filename)
-        # button_start['state'] = 'normal'    # for test
-        button_start['state'] = 'disable'   # 오류로 disable
+        if flag_testmode == False:
+            button_start['state'] = 'disable'   # Error 발생하여 disable
+        else:
+            button_start['state'] = 'normal'    # for test
+        
         tk.update()
     except Exception as e:
         templabel.configure(text='오류: 알 수 없는 오류 발생. 프로그램 재실행 필요')
@@ -173,7 +178,7 @@ def pick_one(integer):
     global amount
     k = final_quiz_list[integer][0]
     wordlabel.configure(text=k)
-    if dual_window_flag == True:
+    if flag_dual_window == True:
         wordlabelWindow.configure(text=k)
 
 def showQuestion():
@@ -193,7 +198,7 @@ def showQuestion():
         pick_one(i)
         wordlIndex.configure(text='{0} / {1}'.format(i+1,amount))       # 현재 문제 순번 / 전체 문제수
         tk.update()
-        if dual_window_flag == True:
+        if flag_dual_window == True:
             wordlIndexWindow.configure(text='{0} / {1}'.format(i+1,amount))       # 현재 문제 순번 / 전체 문제수
             window.update()
         sleep(duration)
@@ -221,7 +226,7 @@ def gotoMain():
     button_setup.configure(text='설정', state='normal', command=setup)
     button_start.configure(text='시작!', state='disable', command=start)
 
-if dual_window_flag == True: 
+if flag_dual_window == True: 
     # 시작할 때 같이 열리는 팝업, 학생용
     window = tkinter.Toplevel()
     window.title('Window')
