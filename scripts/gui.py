@@ -19,8 +19,8 @@ amount = 10                # 출제 수량
 filename = ''
 
 flag_dual_window = False
-flag_suspend = False
-flag_testmode = False
+flag_stop = False
+flag_testmode = True
 
 quizlist = list()           # 출제 범위에 해당하는 단어와 그 뜻을 모아둔 추첨 리스트
 # randint 쓰려면 순서가 없는 딕셔너리에서는 무작위 추첨이 불가하여, 리스트로 생성
@@ -181,18 +181,23 @@ def pick_one(integer):
     if flag_dual_window == True:
         wordlabelWindow.configure(text=k)
 
+def stop():     # async?
+    global flag_stop
+    flag_stop = True
+    button_setup.configure(text='처음으로', state='normal', command=gotoMain)
+
 def showQuestion():
     button_setup.configure(state='disable')
     frame_question.pack(expand=True, fill='both')
     wordlabel.pack(expand=True, fill='both')
     wordlIndex.place(relx=0.5, rely=0.25, anchor='center')
-    button_start['state'] = 'disable'
+    button_start.configure(text='멈춤', state='normal', command=stop)
     soundFile = 'paper.mp3'
-    # path = '.\\res\\'+filename
-    # XXX 자꾸 Can't concat bytes to str 에러 나서 path는 일단 보류
     
-    global amount
+    global amount, flag_stop
     for i in range(amount):
+        if flag_stop == True:
+            break
         # async?
         playsound(soundFile)
         pick_one(i)
@@ -202,8 +207,8 @@ def showQuestion():
             wordlIndexWindow.configure(text='{0} / {1}'.format(i+1,amount))       # 현재 문제 순번 / 전체 문제수
             window.update()
         sleep(duration)
-        # playsound(path)
     
+    flag_stop = False
     button_start.configure(text='정답', state='normal', command=showAnswers)
 
 def showAnswers():  # 정답 공개
@@ -220,6 +225,7 @@ def showAnswers():  # 정답 공개
     button_start.configure(state='disable')
 
 def gotoMain():
+    frame_question.forget()
     frame_answer.pack_forget()
     frame_setup.pack(expand=True, anchor='center', padx=10, pady=40)
     templabel.configure(text='')
