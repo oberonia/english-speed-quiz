@@ -17,10 +17,11 @@ duration = 2                # 문제가 화면에 나타나는 시간 (단위: �
 startIdx, endIdx = 290, 309     # 출제 범위
 amount = 10                # 출제 수량
 filename = ''
+filepath = ''
 
 flag_dual_window = False
 flag_stop = False
-flag_testmode = True
+flag_testmode = False
 
 quizlist = list()           # 출제 범위에 해당하는 단어와 그 뜻을 모아둔 추첨 리스트
 # randint 쓰려면 순서가 없는 딕셔너리에서는 무작위 추첨이 불가하여, 리스트로 생성
@@ -30,10 +31,12 @@ final_quiz_list = list()    # quizlist에서 단어, 뜻, 해설을 순서대로
 # TODO init에 기본적인 ui 선언을 다 때려넣어야 하는거 아닌지???
 
 def importFile():
-    global filename
+    global filename, filepath
     try:
         filename = askopenfilename(initialdir=os.getcwd(), title="Import File", filetypes=(("csv files", "*.csv"),))
         if ".csv" in filename:
+            filepath = filename
+            # print(filepath)
             if "/" in filename:
                 templist = filename.split("/")
                 filename = templist[-1]             # 파일명만 경로에서 분리
@@ -48,8 +51,22 @@ def importFile():
     except:
         label_filename.configure(text="오류: 파일 import 실패")
         button_start['state'] = 'disable'
-
-def shuffle(startIdx, endIdx, problems, filename):
+'''
+def toggleDualFlag():
+    global flag_dual_window
+    if flag_dual_window == True:
+        # 보조화면 켬에서 끔으로 변경
+        label_dualWindow_state.configure(text='OFF')
+        flag_dual_window = False
+        window.destroy()
+    elif flag_dual_window == False:
+        # 보조화면 끔에서 켬으로 변경
+        label_dualWindow_state.configure(text='ON')
+        flag_dual_window = True
+        frame_window.pack()
+        openDualWindow()
+'''
+def shuffle(startIdx, endIdx, problems, filepath):
     
     global quizlist, final_quiz_list
     tempOrder = []
@@ -57,7 +74,7 @@ def shuffle(startIdx, endIdx, problems, filename):
     if len(quizlist) != 0:
         quizlist.clear()
         final_quiz_list = []
-    with open(filename, 'r', encoding='utf-8-sig') as file1:
+    with open(filepath, 'r', encoding='utf-8-sig') as file1:
         params = csv.DictReader(file1)
 
         for item in params:
@@ -128,16 +145,25 @@ label_filename.grid(row=4, column=1)
 
 button_setup = ttk.Button(frame_setup, text='Import', command=importFile)
 button_setup.grid(row=4, column=2)
+'''
+label_dualWindow = ttk.Label(frame_setup, text='보조 화면')
+label_dualWindow.grid(row=5, column=0)
 
+label_dualWindow_state = ttk.Label(frame_setup, text='OFF')
+label_dualWindow_state.grid(row=5, column=1)
+
+button_dualWindow_setup = ttk.Button(frame_setup, text='바꾸기', command=toggleDualFlag)
+button_dualWindow_setup.grid(row=5, column=2)
+'''
 def setup():
     try:
-        global duration, startIdx, endIdx, amount, filename, flag_testmode
+        global duration, startIdx, endIdx, amount, filepath, flag_testmode
         duration = float(entry_duration.get())
         startIdx = int(entry_startIdx.get())
         endIdx = int(entry_endIdx.get())
         amount = int(entry_amount.get())
         if filename != "":
-            shuffle(startIdx, endIdx, amount, filename)
+            shuffle(startIdx, endIdx, amount, filepath)
             button_start['state'] = 'normal'
             templabel.configure(text='')
             tk.update()
@@ -149,8 +175,8 @@ def setup():
         duration = 0.02                # 문제가 화면에 나타나는 시간 (단위: 초)
         startIdx, endIdx = 5, 6     # 출제 범위
         amount = 6                # 출제 수량
-        filename = 'BASIC_Day1.csv'     # 파일명에 한글 들어있으면 오류남
-        shuffle(startIdx, endIdx, amount, filename)
+        filepath = 'BASIC_Day1.csv'     # 파일명에 한글 들어있으면 오류남, 바탕화면 경로
+        shuffle(startIdx, endIdx, amount, filepath)
         if flag_testmode == False:
             button_start['state'] = 'disable'   # Error 발생하여 disable
         else:
@@ -163,10 +189,10 @@ def setup():
         print(e)
 
 templabel = ttk.Label(frame_setup)
-templabel.grid(row=5, columnspan=2)
+templabel.grid(row=90, columnspan=2)
 
 templabel2 = ttk.Label(frame_setup, wraplength=300)
-templabel2.grid(row=6, columnspan=2)
+templabel2.grid(row=91, columnspan=2)
 
 def start():
     frame_setup.forget()
@@ -232,8 +258,8 @@ def gotoMain():
     button_setup.configure(text='설정', state='normal', command=setup)
     button_start.configure(text='시작!', state='disable', command=start)
 
-if flag_dual_window == True: 
-    # 시작할 때 같이 열리는 팝업, 학생용
+# 시작할 때 같이 열리는 팝업, 학생용
+if flag_dual_window == True:
     window = tkinter.Toplevel()
     window.title('Window')
     window.geometry('1024x720+150+80')
@@ -246,7 +272,20 @@ if flag_dual_window == True:
     frame_window.pack(expand=True, fill='both')
     wordlIndexWindow.place(relx=0.5, rely=0.25, anchor='center')
     wordlabelWindow.pack(expand=True, fill='both')
-    # end of window
+
+def openDualWindow():
+    window = tkinter.Toplevel()
+    window.title('Window')
+    window.geometry('1024x720+150+80')
+
+    frame_window = ttk.Frame(window)
+    frame_window.pack(expand=True, fill='both')
+    wordlabelWindow = ttk.Label(frame_window, text='Ready', font=question_font, anchor='center')
+    wordlIndexWindow = ttk.Label(frame_window, text='Index', font=number_font, anchor='center')
+
+    frame_window.pack(expand=True, fill='both')
+    wordlIndexWindow.place(relx=0.5, rely=0.25, anchor='center')
+    wordlabelWindow.pack(expand=True, fill='both')
 
 frame_question = ttk.Frame(tk)
 frame_question.pack(expand=True, fill='both')
