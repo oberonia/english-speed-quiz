@@ -10,6 +10,7 @@ import csv, os
 
 tk = Tk()
 
+sw, sh = tk.winfo_screenwidth(), tk.winfo_screenheight()
 tk.title('Quiz')    # 윈도우 이름
 tk.geometry('1024x720+100+30')
 
@@ -19,7 +20,7 @@ amount = 10                # 출제 수량
 filename = ''
 filepath = ''
 
-flag_dual_window = False
+flag_dual_window = True
 flag_stop = False
 flag_testmode = False
 
@@ -262,7 +263,7 @@ def gotoMain():
 if flag_dual_window == True:
     window = tkinter.Toplevel()
     window.title('Window')
-    window.geometry('1024x720+150+80')
+    window.geometry('1024x720+%d+0' % (sw))
 
     frame_window = ttk.Frame(window)
     frame_window.pack(expand=True, fill='both')
@@ -276,7 +277,7 @@ if flag_dual_window == True:
 def openDualWindow():
     window = tkinter.Toplevel()
     window.title('Window')
-    window.geometry('1024x720+150+80')
+    window.geometry('1024x720+%d+0' % (sw))
 
     frame_window = ttk.Frame(window)
     frame_window.pack(expand=True, fill='both')
