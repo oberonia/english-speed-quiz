@@ -7,10 +7,11 @@ import tkinter
 from tkinter.filedialog import askopenfilename
 from playsound import playsound
 import csv, os
+from screeninfo import get_monitors
+import platform
 
 tk = Tk()
 
-sw, sh = tk.winfo_screenwidth(), tk.winfo_screenheight()
 tk.title('Quiz')    # 윈도우 이름
 tk.geometry('1024x720+100+30')
 
@@ -259,11 +260,25 @@ def gotoMain():
     button_setup.configure(text='설정', state='normal', command=setup)
     button_start.configure(text='시작!', state='disable', command=start)
 
-# 시작할 때 같이 열리는 팝업, 학생용
-if flag_dual_window == True:
+def findPrimaryMonitor():
+    '''
+    주모니터 / 보조모니터 구분, 보조모니터의 상대 x,y 좌표와 해상도를 return
+    '''
+    monitor1, monitor2 = get_monitors()
+    if monitor1.is_primary == True:
+        # 모니터1이 주모니터인 경우, 모니터2가 서브
+        return monitor2.x, monitor2.y, monitor2.width, monitor2.height
+    else:
+        # 모니터1이 서브
+        return monitor1.x, monitor1.y, monitor1.width, monitor1.height
+
+def openDualWindow():
     window = tkinter.Toplevel()
     window.title('Window')
-    window.geometry('1024x720+%d+0' % (sw))
+    relativeX, relativeY, height, width = findPrimaryMonitor()
+    window.geometry('%dx%d+%d+%d' % (height, width, relativeX, relativeY))
+    if platform.system() == 'Windows':
+        window.state('zoomed')      # works Windows only
 
     frame_window = ttk.Frame(window)
     frame_window.pack(expand=True, fill='both')
@@ -274,10 +289,14 @@ if flag_dual_window == True:
     wordlIndexWindow.place(relx=0.5, rely=0.25, anchor='center')
     wordlabelWindow.pack(expand=True, fill='both')
 
-def openDualWindow():
+# 시작할 때 같이 열리는 팝업, 학생용
+if flag_dual_window == True:
     window = tkinter.Toplevel()
     window.title('Window')
-    window.geometry('1024x720+%d+0' % (sw))
+    relativeX, relativeY, height, width = findPrimaryMonitor()
+    window.geometry('%dx%d+%d+%d' % (height, width, relativeX, relativeY))
+    if platform.system() == 'Windows':
+        window.state('zoomed')      # works Windows only
 
     frame_window = ttk.Frame(window)
     frame_window.pack(expand=True, fill='both')
