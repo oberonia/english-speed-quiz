@@ -9,6 +9,7 @@ from playsound import playsound
 import csv, os
 from screeninfo import get_monitors
 import platform
+import asyncio
 
 tk = Tk()
 
@@ -202,6 +203,7 @@ def start():
     print('start', path.__dir__)
     wordlabel['command'] = showQuestion()
     
+# async def pick_one(integer):
 def pick_one(integer):
     global amount
     k = final_quiz_list[integer][0]
@@ -226,14 +228,14 @@ def showQuestion():
     for i in range(amount):
         if flag_stop == True:
             break
-        # async?
-        playsound(soundFile)
+        # asyncio.run(pick_one(i))
         pick_one(i)
         wordlIndex.configure(text='{0} / {1}'.format(i+1,amount))       # 현재 문제 순번 / 전체 문제수
         tk.update()
         if flag_dual_window == True:
             wordlIndexWindow.configure(text='{0} / {1}'.format(i+1,amount))       # 현재 문제 순번 / 전체 문제수
             window.update()
+        playsound(soundFile)
         sleep(duration)
     
     flag_stop = False
