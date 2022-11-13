@@ -86,7 +86,7 @@ def shuffle(startIdx, endIdx, problems, filepath):
                 if int(item['index']) in rangeNum:          # 출제 범위에 해당하는 단어만 추첨 대상에 추가
                     quizlist.append([item['word'], item['mean'], item['commentary']])
             except ValueError as e:
-                errorText = '오류: 에러 발생. 프로그램 재시작 필요'
+                errorText = '오류: indexing 에러 발생. 출제범위 재설정 필요'
                 templabel['text'] = errorText
                 button_start['state'] = 'disable'
                 tk.update()
