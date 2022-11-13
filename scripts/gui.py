@@ -176,8 +176,8 @@ def setup():
     except ValueError:
         templabel['text'] = '오류: 미입력한 값이 있거나, 올바르지 않은 유형을 입력함'
         duration = 0.02                # 문제가 화면에 나타나는 시간 (단위: 초)
-        startIdx, endIdx = 5, 6     # 출제 범위
-        amount = 6                # 출제 수량
+        startIdx, endIdx = 7, 7     # 출제 범위
+        amount = 3                # 출제 수량
         filepath = 'BASIC_Day1.csv'     # 파일명에 한글 들어있으면 오류남, 바탕화면 경로
         shuffle(startIdx, endIdx, amount, filepath)
         if flag_testmode == False:
@@ -277,7 +277,7 @@ def findPrimaryMonitor():
 def openDualWindow():
     window = tkinter.Toplevel()
     window.title('Window')
-    relativeX, relativeY, height, width = findPrimaryMonitor()
+    relativeX, relativeY, width, height = findPrimaryMonitor()
     window.geometry('%dx%d+%d+%d' % (height, width, relativeX, relativeY))
     if platform.system() == 'Windows':
         window.state('zoomed')      # works Windows only
@@ -295,14 +295,14 @@ def openDualWindow():
 if flag_dual_window == True:
     window = tkinter.Toplevel()
     window.title('Window')
-    relativeX, relativeY, height, width = findPrimaryMonitor()
+    relativeX, relativeY, width, height = findPrimaryMonitor()
     window.geometry('%dx%d+%d+%d' % (height, width, relativeX, relativeY))
     if platform.system() == 'Windows':
         window.state('zoomed')      # works Windows only
 
     frame_window = ttk.Frame(window)
     frame_window.pack(expand=True, fill='both')
-    wordlabelWindow = ttk.Label(frame_window, text='Ready', font=question_font, anchor='center')
+    wordlabelWindow = ttk.Label(frame_window, text='Ready', font=question_font, anchor='center', wraplength=width*0.9)
     wordlIndexWindow = ttk.Label(frame_window, text='Index', font=number_font, anchor='center')
 
     frame_window.pack(expand=True, fill='both')
@@ -313,7 +313,8 @@ frame_question = ttk.Frame(tk)
 frame_question.pack(expand=True, fill='both')
 frame_answer = ttk.Frame(tk)
 
-wordlabel = ttk.Label(frame_question, text='wordlabel', font=question_font, anchor='center')
+relativeX, relativeY, width, height = findPrimaryMonitor()
+wordlabel = ttk.Label(frame_question, text='wordlabel', font=question_font, anchor='center', wraplength=width*0.9)
 wordlIndex = ttk.Label(frame_question, text='wordIndex', font=number_font, anchor='center')
 
 answer_tree = ttk.Treeview(frame_answer, columns=['word', 'meaning','commentary'], displaycolumns=['word', 'meaning','commentary'], height=(amount+2))
