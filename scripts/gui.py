@@ -339,4 +339,14 @@ button_setup.grid(row=0, column=0)
 button_start = ttk.Button(frame_command, text='시작!', command=start, state='disable')
 button_start.grid(row=0, column=1)
 
+# 실행 시 기본값
+if not flag_testmode:
+    entry_duration.insert(0, "6")
+    entry_amount.insert(0, "30")
+else:
+    entry_duration.insert(0, "0.2")
+    entry_amount.insert(0, "3")
+    entry_startIdx.insert(0, "7")
+    entry_endIdx.insert(0, "7")
+
 mainloop()
